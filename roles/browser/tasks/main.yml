@@ -1,0 +1,23 @@
+---
+- name: Set Firefox as default browser
+  ansible.windows.win_shell: setdefaultbrowser.exe HKLM Firefox-308046B0AF4A39CB
+
+- name: Create distribution directory for Firefox
+  win_file:
+    path: C:\Program Files\Mozilla Firefox\distribution
+    state: directory
+
+- name: Get Firefox policies
+  win_get_url:
+    url: https://gist.githubusercontent.com/envied/6ca47867fc891765189b652a0b45ed5a/raw/d17e3085b2888ff9a4db23062e0fd576dc92d5dd/policies.json
+    dest: C:\Program Files\Mozilla Firefox\distribution\policies.json
+
+- name: Get autoconfig.js
+  win_get_url:
+    url: https://gist.githubusercontent.com/envied/b93b54a8a6f3906e85b8a335f8818343/raw/02e987bb139a79c519b2feb3d1514ff83013584a/autoconfig.js
+    dest: C:\program Files\Mozilla Firefox\defaults\pref\autoconfig.js
+
+- name: Get firefox.cfg
+  win_get_url:
+    url: https://gist.githubusercontent.com/envied/61886cb20e328ff035e302e13c2eccf1/raw/a9985329b97a09c0ecb3fe7f573551a49f3f49ae/firefox.cfg
+    dest: C:\Program Files\Mozilla Firefox\firefox.cfg

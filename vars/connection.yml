@@ -1,0 +1,12 @@
+# Ansible Settings for Windows Connections
+ansible_connection: psrp
+ansible_psrp_auth: ntlm
+ansible_psrp_transport: ntlm
+ansible_psrp_cert_validation: ignore
+
+# WinRM Settings
+ansible_winrm_port: 5986  # Port for HTTPS connection
+
+# Credentials
+ansible_user: azureuser
+ansible_password: "{{ lookup('env', 'ANSIBLE_PASSWORD') }}"

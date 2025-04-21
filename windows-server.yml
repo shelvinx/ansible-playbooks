@@ -1,0 +1,9 @@
+---
+- name: Complete Windows Server Configuration
+  hosts: all
+  vars_files:
+    - vars/connection.yml
+
+  roles:
+    - role: applications
+    - role: browser
