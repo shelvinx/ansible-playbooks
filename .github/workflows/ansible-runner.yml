@@ -68,6 +68,8 @@ jobs:
           echo "Running Windows playbook"
           ansible-playbook -i inventory/azure_rm.yml play-windows.yml
         shell: bash
+        env:
+          ANSIBLE_PASSWORD: ${{ secrets.ANSIBLE_PASSWORD }}
 
       # Optional: Azure Logout (cleans up credentials)
       # Instead of relying on Github Actions Cleanup
