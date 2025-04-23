@@ -51,7 +51,7 @@ jobs:
       - name: Install dependencies with uv
         run: |
           uv --version # Verify uv is working
-          uv pip install -r requirements.txt
+          uv pip install --system -r requirements.txt
         shell: bash
 
       # 5. Install Ansible Galaxy Azure Collection
