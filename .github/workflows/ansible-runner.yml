@@ -68,10 +68,6 @@ jobs:
           echo "Listing Azure dynamic inventory..."
           ansible-inventory -i inventory/azure_rm.yml --list -vvv
         shell: bash
-        env:
-          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
 
       #- name: Run Ansible Playbook (Example - uncomment and modify)
         # run: |
