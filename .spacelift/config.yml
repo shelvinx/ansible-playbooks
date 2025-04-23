@@ -9,3 +9,7 @@ stacks:
   # Optionally override per-stack by slug
   az-ansible:
     runner_image: public.ecr.aws/spacelift/runner-ansible:11.4-azure
+
+  before_init:
+    - curl -LsSf https://astral.sh/uv/install.sh | sh
+    - uv pip install -r requirements.txt
