@@ -1,5 +1,5 @@
 plugin: azure.azcollection.azure_rm
-auth_source: env
+auth_source: auto
 
 keyed_groups:
   - prefix: os

@@ -66,8 +66,6 @@ jobs:
       - name: Run Ansible Inventory Check (Example)
         run: |
           echo "Listing Azure dynamic inventory..."
-          # Assuming your inventory file is at 'inventory/azure_rm.yml'
-          # Adjust the path if needed.
           ansible-inventory -i inventory/azure_rm.yml --list -vvv
         shell: bash
         env:
