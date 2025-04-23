@@ -1,0 +1,9 @@
+---
+- name: Ping all Linux systems
+  hosts: os_linux
+  vars_files:
+    - vars/connection-linux.yml
+
+  tasks:
+  - name: Ping all Linux systems
+    ping:

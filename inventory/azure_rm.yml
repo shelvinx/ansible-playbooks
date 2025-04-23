@@ -1,5 +1,6 @@
 plugin: azure.azcollection.azure_rm
 auth_source: env
 
-compose:
-  azure_tags: tags
+keyed_groups:
+  - prefix: os
+    key: os_profile.system

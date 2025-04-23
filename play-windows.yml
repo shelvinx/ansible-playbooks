@@ -1,8 +1,8 @@
 ---
 - name: Complete Windows Server Configuration
-  hosts: all
+  hosts: os_windows
   vars_files:
-    - vars/connection.yml
+    - vars/connection-windows.yml
 
   roles:
     - role: applications
