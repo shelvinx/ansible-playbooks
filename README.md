@@ -1,9 +1,6 @@
 # Ansible Configuration Management for Azure
 Repository for Ansible playbooks and roles to manage Azure resources.
 
-## Requirements
-- Ansible
-
 ## Resolved Issues & Important Notes
 
 ### Azure Dynamic Inventory Authentication (OIDC)
@@ -13,12 +10,13 @@ Repository for Ansible playbooks and roles to manage Azure resources.
 - OIDC does not use `AZURE_SECRET`.
 
 ### Authentication
-- In your workflow, pass this secret as an environment variable to Ansible:
+- The Windows password should be stored as a GitHub Actions secret named `ANSIBLE_PASSWORD`.
+- The secret must be exposed as an environment variable in the workflow step that runs Ansible:
   ```yaml
   env:
     ANSIBLE_PASSWORD: ${{ secrets.ANSIBLE_PASSWORD }}
   ```
-- In your Ansible vars, use:
+- In Ansible variable files, the following pattern is used to retrieve the password from the environment:
   ```yaml
   ansible_password: "{{ lookup('env', 'ANSIBLE_PASSWORD') }}"
   ```
