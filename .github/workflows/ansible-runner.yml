@@ -77,7 +77,7 @@ jobs:
         # env: # Optional: Pass extra vars if needed
           # ANSIBLE_EXTRA_VARS: "myvar=value"
 
-      - name: Run Ansible Playbook (Example - uncomment and modify)
+      #- name: Run Ansible Playbook (Example - uncomment and modify)
         # run: |
         #   echo "Running main playbook..."
         #   ansible-playbook -i inventory/azure_rm.yml your_main_playbook.yml -vv
