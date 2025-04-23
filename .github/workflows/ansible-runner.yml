@@ -1,0 +1,91 @@
+# .github/workflows/ansible_azure.yml
+
+name: Run Ansible on Azure Infra
+
+# Controls when the workflow will run
+on:
+  # Allows manual triggering from the Actions tab
+  workflow_dispatch:
+  # Triggers the workflow on push events but only for the main branch
+  push:
+    branches: [ main ]
+
+permissions: # Needed for Azure Login action
+  id-token: write
+  contents: read
+
+jobs:
+  ansible-run:
+    name: Setup Environment and Run Ansible
+    runs-on: ubuntu-latest
+    environment: Azure
+    env:
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+
+    steps:
+      # 1. Check out the repository code
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      # 2. Set up Python environment
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11' # Choose your desired Python version
+
+      # 3. Install uv
+      - name: Install uv
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          # Add uv's default installation directory to the PATH for subsequent steps
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+        shell: bash
+
+      # 4. Install dependencies using uv
+      #    IMPORTANT: Ensure requirements.txt contains 'ansible' and 'ansible[azure]'
+      #    Example requirements.txt:
+      #    ansible>=8.0.0,<9.0.0
+      #    ansible[azure]>=2.16.0 # Or specific azure collection deps if not using ansible[azure]
+      - name: Install dependencies with uv
+        run: |
+          uv --version # Verify uv is working
+          uv pip install -r requirements.txt
+        shell: bash
+
+      # 5. Install Ansible Galaxy Azure Collection
+      - name: Install Azure Collection
+        run: ansible-galaxy collection install azure.azcollection
+        shell: bash
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      # 7. Run Ansible
+      #    Replace the command below with your actual ansible-playbook command
+      - name: Run Ansible Inventory Check (Example)
+        run: |
+          echo "Listing Azure dynamic inventory..."
+          # Assuming your inventory file is at 'inventory/azure_rm.yml'
+          # Adjust the path if needed.
+          ansible-inventory -i inventory/azure_rm.yml --list -vvv
+        shell: bash
+        # env: # Optional: Pass extra vars if needed
+          # ANSIBLE_EXTRA_VARS: "myvar=value"
+
+      - name: Run Ansible Playbook (Example - uncomment and modify)
+        # run: |
+        #   echo "Running main playbook..."
+        #   ansible-playbook -i inventory/azure_rm.yml your_main_playbook.yml -vv
+        # shell: bash
+
+      # Optional: Azure Logout (cleans up credentials)
+      - name: Azure Logout
+        if: always() # Run this even if previous steps fail
+        run: az logout && az cache purge && az account clear
+        shell: bash
+
