@@ -22,7 +22,7 @@ Repository for Ansible playbooks and roles to manage Azure resources.
   ```
 
 ### Using uv in CI/CD
-- The `uv` tool is used for fast Python dependency installs. In CI/CD, use `uv pip install --system -r requirements.txt` to avoid venv errors.
+- The `--system` flag should be used when installing dependencies with `uv pip install --system -r requirements.txt` to avoid venv errors.
 - Add `$HOME/.cargo/bin` to `$GITHUB_PATH` to call `uv`.
 
 ### Workflow Triggers TODO: automate tf workflow
