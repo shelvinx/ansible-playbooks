@@ -19,10 +19,6 @@ jobs:
     name: Setup Environment and Run Ansible
     runs-on: ubuntu-latest
     environment: Azure
-    env:
-      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
 
     steps:
       # 1. Check out the repository code
@@ -74,8 +70,10 @@ jobs:
           # Adjust the path if needed.
           ansible-inventory -i inventory/azure_rm.yml --list -vvv
         shell: bash
-        # env: # Optional: Pass extra vars if needed
-          # ANSIBLE_EXTRA_VARS: "myvar=value"
+        env:
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
 
       #- name: Run Ansible Playbook (Example - uncomment and modify)
         # run: |
