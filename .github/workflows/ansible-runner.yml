@@ -1,5 +1,4 @@
 # .github/workflows/ansible_azure.yml
-
 name: Run Ansible on Azure Infra
 
 # Controls when the workflow will run
@@ -21,17 +20,17 @@ jobs:
     environment: Azure
 
     steps:
-      # 1. Check out the repository code
+      # Check out the repository code
       - name: Check out code
         uses: actions/checkout@v4
 
-      # 2. Set up Python environment
+      # Set up Python environment
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11' # Choose your desired Python version
 
-      # 3. Install uv
+      # Install uv
       - name: Install uv
         run: |
           curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -39,18 +38,14 @@ jobs:
           echo "$HOME/.cargo/bin" >> $GITHUB_PATH
         shell: bash
 
-      # 4. Install dependencies using uv
-      #    IMPORTANT: Ensure requirements.txt contains 'ansible' and 'ansible[azure]'
-      #    Example requirements.txt:
-      #    ansible>=8.0.0,<9.0.0
-      #    ansible[azure]>=2.16.0 # Or specific azure collection deps if not using ansible[azure]
+      # Install dependencies with uv
       - name: Install dependencies with uv
         run: |
           uv --version # Verify uv is working
           uv pip install --system -r requirements.txt
         shell: bash
 
-      # 5. Install Ansible Galaxy Azure Collection
+      # Install Ansible Galaxy Azure Collection
       - name: Install Azure Collection
         run: ansible-galaxy collection install azure.azcollection
         shell: bash
@@ -61,21 +56,21 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      # 7. Run Ansible
-      #    Replace the command below with your actual ansible-playbook command
-      - name: Run Ansible Inventory Check (Example)
+
+      - name: Run Ansible Inventory Check
         run: |
           echo "Listing Azure dynamic inventory..."
           ansible-inventory -i inventory/azure_rm.yml --list -vvv
         shell: bash
 
-      #- name: Run Ansible Playbook (Example - uncomment and modify)
-        # run: |
-        #   echo "Running main playbook..."
-        #   ansible-playbook -i inventory/azure_rm.yml your_main_playbook.yml -vv
-        # shell: bash
+      - name: Run Ansible Playbook
+        run: |
+          echo "Running Windows playbook"
+          ansible-playbook -i inventory/azure_rm.yml play-windows.yml
+        shell: bash
 
       # Optional: Azure Logout (cleans up credentials)
+      # Instead of relying on Github Actions Cleanup
       - name: Azure Logout
         if: always() # Run this even if previous steps fail
         run: az logout && az cache purge && az account clear
