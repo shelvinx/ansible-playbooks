@@ -1,0 +1,20 @@
+---
+- name: Disable 'Try Windows Admin Center' Pop-up at Server Manager Launch
+  ansible.windows.win_regedit:
+    path: HKLM:\SOFTWARE\Microsoft\ServerManager
+    name: DoNotPopWACConsoleAtSMLaunch
+    data: 1
+    type: dword
+    state: present
+  tags:
+    - disable_wac_popup
+
+- name: Prevent Server Manager from opening at logon (optional)
+  ansible.windows.win_regedit:
+    path: HKLM:\SOFTWARE\Microsoft\ServerManager
+    name: DoNotOpenServerManagerAtLogon
+    data: 1
+    type: dword
+    state: present
+  tags:
+    - disable_server_manager_at_logon
