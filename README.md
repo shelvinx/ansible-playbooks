@@ -25,12 +25,11 @@ Repository for Ansible playbooks and roles to manage Azure resources.
 - The `--system` flag should be used when installing dependencies with `uv pip install --system -r requirements.txt` to avoid venv errors.
 - Add `$HOME/.cargo/bin` to `$GITHUB_PATH` to call `uv`.
 
-### Workflow Triggers TODO: automate tf workflow
-- To trigger Ansible after Terraform completes, use `workflow_run` (monorepo) or `repository_dispatch` (multi-repo) triggers.
+### Workflow Trigger
+- GitHub Actions workflow is triggered by TF Cloud Run Task using webhook.
 
 ---
 
 This workflows enables local execution via WSL or Github Actions.
 
-**Keep this section updated as new issues are resolved or new patterns are adopted!**
 - Azure CLI x
