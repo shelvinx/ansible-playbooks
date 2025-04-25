@@ -3,6 +3,14 @@
   community.windows.win_timezone:
     timezone: GMT Standard Time
 
+- name: Add Firefox syspin to Run key
+  win_regedit:
+    path: 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Run'
+    name: 'PinFirefoxSyspin'
+    data: 'syspin "C:\Program Files\Mozilla Firefox\firefox.exe" 51201'
+    type: string
+    state: present
+
 - name: Find Edge uninstaller
   win_find:
     paths: 'C:\Program Files (x86)\Microsoft\Edge\Application'
