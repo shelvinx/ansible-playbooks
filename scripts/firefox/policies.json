@@ -19,6 +19,14 @@
       "NoDefaultBookmarks": true,
       "DisableDefaultBrowserAgent": true,
       "DisableTelemetry": true,
+      "Permissions": {
+        "Location": {
+          "BlockNewRequests": true
+        },
+        "Notifications": {
+          "BlockNewRequests": true
+        }
+      },
       "ExtensionSettings": {
         "uBlock0@raymondhill.net": {
           "installation_mode": "force_installed",

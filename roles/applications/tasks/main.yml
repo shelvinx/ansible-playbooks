@@ -6,4 +6,6 @@
       - Firefox
       - setdefaultbrowser
       - syspin
+      - vscode
+      - winrar
     state: latest
