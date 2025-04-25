@@ -1,7 +1,8 @@
 {
     "policies": {
       "BlockAboutConfig": false,
-    "DisplayBookmarksToolbar": "never",
+      "DisplayBookmarksToolbar": "never",
+      "DontCheckDefaultBrowser": true,
       "FirefoxHome": {
         "Search": true,
         "TopSites": false,
@@ -22,7 +23,12 @@
         "uBlock0@raymondhill.net": {
           "installation_mode": "force_installed",
           "install_url": "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi",
-          "default_area": "navbar",
+          "default_area": "navbar"
+        }
+      },
+      "3rdparty": {
+      "Extensions": {
+        "uBlock0@raymondhill.net": {
           "adminSettings": {
             "selectedFilterLists": [
               "user-filters",
@@ -50,3 +56,4 @@
       }
     }
   }
+}
