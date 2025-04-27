@@ -1,7 +1,43 @@
 ---
-- name: Set timezone to 'GMT Standard Time' (London, UK)
-  community.windows.win_timezone:
-    timezone: GMT Standard Time
+- name: Store Public DNS of VM as a variable
+  set_fact:
+    vm_public_dns: "{{ hostvars[inventory_hostname].public_dns_hostnames[0] }}"
+
+- name: Use the stored public DNS in another task
+  debug:
+    msg: "The stored public DNS is: {{ vm_public_dns }}"
+
+- name: Check if certificate exists by friendly name with wildcard
+  win_shell: |
+    $cert = Get-ChildItem -Path Cert:\LocalMachine\My | Where-Object { $_.FriendlyName -like 'azure-cert*' }
+    if ($cert) { exit 0 } else { exit 1 }
+  register: cert_check
+  ignore_errors: true
+
+- name: Debug certificate check
+  debug:
+    msg: "Certificate check result: {{ cert_check.rc }}"
+  
+- name: Create certificate if not present
+  win_command: |
+    wacs.exe --accepttos --host "{{ vm_public_dns }}" --source manual --friendlyname "azure-cert"
+  when: cert_check.rc != 0
+  register: cert_creation
+
+- name: Ensure certificate was created
+  assert:
+    that:
+      - cert_creation.rc == 0
+  when: cert_check.rc != 0
+
+- name: Set certificate thumbprint for RDP listener
+  win_shell: |
+    $tsgs = gwmi -class "Win32_TSGeneralSetting" -Namespace root\cimv2\terminalservices -Filter "TerminalName='RDP-tcp'"
+    $azureCert = gci -path cert:/LocalMachine/My | Where-Object { $_.FriendlyName -like "*azure-cert*" }
+    $thumb = $azureCert.Thumbprint
+    swmi -path $tsgs.__path -argument @{SSLCertificateSHA1Hash="$thumb"}
+    Restart-Service -Name TermService -Force
+  when: cert_check.rc != 0
 
 - name: Add Firefox syspin to Run key
   win_regedit:
@@ -70,6 +106,8 @@
     - { path: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds', name: 'EnableFeeds', data: 0 }
     - { path: 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer', name: 'HideSCAMeetNow', data: 1 }
     - { path: 'HKLM:\SYSTEM\CurrentControlSet\Control\Network', name: 'NewNetworkWindowOff', data: 1 }
+    - { path: 'HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A7-37EF-4b3f-8CFC-4F3A74704073}', name: 'IsInstalled', data: 0 }
+    - { path: 'HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A8-37EF-4b3f-8CFC-4F3A74704073}', name: 'IsInstalled', data: 0 }
   tags:
     - registry
   register: registry_update
