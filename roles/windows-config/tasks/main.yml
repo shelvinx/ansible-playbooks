@@ -69,46 +69,14 @@
   tags:
     - uninstall_msedge
 
-- name: Registry - Configuration updates
-  win_regedit:
-    path: "{{ item.path }}"
-    name: "{{ item.name }}"
-    data: "{{ item.data | default(omit) }}"
-    type: "{{ item.type | default('dword') }}"
-    state: "{{ item.state | default('present') }}"
-  loop:
-    - { path: 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa', name: 'LimitBlankPasswordUse', data: 0 }
-    - { path: 'HKLM:\Software\Policies\Microsoft\WindowsStore', name: 'DisableStoreApps', data: 1 }
-    - { path: 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer', name: 'EnableAutoTray', data: 0 }
-    - { path: 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced', name: 'Hidden' }
-    - { path: 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced', name: 'HideFileExt', data: 0 }
-    - { path: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent', name: 'DisableWindowsConsumerFeatures', data: 1 }
-    - { path: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent', name: 'DisableSoftLanding', data: 1 }
-    - { path: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent', name: 'DisableThirdPartySuggestions', data: 1 }
-    - { path: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent', name: 'DisableWindowsSpotlightFeatures', data: 1 }
-    - { path: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection', name: 'AllowTelemetry', data: 0 }
-    - { path: 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced', name: 'ShowTaskViewButton', data: 0 }
-    - { path: 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People', name: 'PeopleBand', data: 0 }
-    - { path: 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer', name: 'EnableAutoTray', data: 0 }
-    - { path: 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Search', name: 'SearchboxTaskbarMode', data: 0 }
-    - { path: 'HKCU:\Software\Policies\Microsoft\Windows\Explorer', name: 'DisableNotificationCenter', data: 1 }
-    - { path: 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer', name: 'HideSCAVolume', data: 1 }
-    - { path: 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer', name: 'NoTaskGrouping', data: 1 }
-    - { path: 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\ControlPanel\', name: 'AllItemsIconView', data: 1 }
-    - { path: 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\ControlPanel\', name: 'StartupPage', data: 1 }
-    - { path: 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced', name: 'NavPaneShowAllFolders', data: 1 }
-    - { path: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search', name: 'AllowCortana', data: 0 }
-    - { path: 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced', name: 'ShowCortanaButton', data: 0 }
-    - { path: 'HKLM:\Software\Policies\Microsoft\Windows\Explorer', name: 'HideRecentlyAddedApps', data: 1 }
-    - { path: 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search', name: 'BingSearchEnabled', data: 0 }
-    - { path: 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search', name: 'CortanaConsent', data: 0 }
-    - { path: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search', name: 'DisableWebSearch', data: 1 }
-    - { path: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds', name: 'EnableFeeds', data: 0 }
-    - { path: 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer', name: 'HideSCAMeetNow', data: 1 }
-    - { path: 'HKLM:\SYSTEM\CurrentControlSet\Control\Network', name: 'NewNetworkWindowOff', data: 1 }
-    - { path: 'HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A7-37EF-4b3f-8CFC-4F3A74704073}', name: 'IsInstalled', data: 0 }
-    - { path: 'HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A8-37EF-4b3f-8CFC-4F3A74704073}', name: 'IsInstalled', data: 0 }
-  tags:
-    - registry
-  register: registry_update
-  notify: Reboot - Registry updated
+- name: Render registry tweaks file
+  template:
+    src: tweaks.reg.j2
+    dest: C:\Windows\Temp\tweaks.reg
+  register: reg_file
+
+- name: Import registry tweaks
+  win_command: reg import C:\Windows\Temp\tweaks.reg
+  args:
+    removes: C:\Windows\Temp\tweaks.reg
+  when: reg_file.changed

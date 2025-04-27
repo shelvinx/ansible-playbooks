@@ -1,0 +1,6 @@
+Windows Registry Editor Version 5.00
+
+{% for item in reg_tweaks %}
+[{{ item.path.replace('HKLM:','HKEY_LOCAL_MACHINE\\').replace('HKCU:','HKEY_CURRENT_USER\\') }}]
+"{{ item.name }}"=dword:{{ '%08x'|format(item.data) }}
+{% endfor %}
