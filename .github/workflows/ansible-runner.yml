@@ -27,22 +27,17 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11' # Choose your desired Python version
+          python-version: '3.12' # Choose your desired Python version
 
       # Install uv
       - name: Install uv
-        run: |
-          curl -LsSf https://astral.sh/uv/install.sh | sh
-          # Add uv's default installation directory to the PATH for subsequent steps
-          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
-        shell: bash
+        uses: astral-sh/setup-uv@v5
 
       # Install dependencies with uv
-      - name: Install dependencies with uv
-        run: |
-          uv --version # Verify uv is working
-          uv pip install --system -r requirements.txt
-        shell: bash
+      - name: Install requirements
+        run: uv pip install -r requirements.txt
+        env:
+          UV_SYSTEM_PYTHON: 1
 
       # Install Ansible Galaxy Azure Collection
       - name: Install Azure Collection
