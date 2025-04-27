@@ -1,5 +1,14 @@
 {
     "policies": {
+        "DisableFirefoxStudies": true,
+        "EnterprisePoliciesEnabled": true,
+        "UserMessaging": {
+            "WhatsNew": false,
+            "FeatureRecommendations": false,
+            "ExtensionRecommendations": false,
+    "UrlbarInterventions": false,
+    "SkipOnboarding": true
+  },
       "BlockAboutConfig": false,
       "DisplayBookmarksToolbar": "never",
       "DontCheckDefaultBrowser": true,
