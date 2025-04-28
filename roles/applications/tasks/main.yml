@@ -9,5 +9,6 @@
       - vscode
       - simple-acme
     state: latest
-    install_args: '--no-progress --limit-output'
+  ignore_errors: true
+  register: chocolatey_install
   notify: Reboot if needed
