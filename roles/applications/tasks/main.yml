@@ -8,4 +8,5 @@
       - syspin
       - vscode
       - winrar
+      - simple-acme
     state: latest
