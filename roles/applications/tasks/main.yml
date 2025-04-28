@@ -1,5 +1,5 @@
 ---
-- name: Applications Install
+- name: Install applications
   win_chocolatey:
     name:
       - 7zip
@@ -7,6 +7,7 @@
       - setdefaultbrowser
       - syspin
       - vscode
-      - winrar
       - simple-acme
     state: latest
+    install_args: '--no-progress --limit-output'
+  notify: Reboot if needed
