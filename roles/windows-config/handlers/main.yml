@@ -2,6 +2,6 @@
 - name: Reboot - Registry updated
   win_reboot:
     msg: "Rebooting after registry configuration changes."
-    pre_reboot_delay: 5
-    reboot_timeout: 600
-    post_reboot_delay: 20
+    pre_reboot_delay: 2
+    reboot_timeout: 120
+    post_reboot_delay: 5
