@@ -20,7 +20,7 @@
   
 - name: Create certificate if not present
   win_command: |
-    wacs.exe --accepttos --host "{{ vm_public_dns }}" --source manual --friendlyname "azure-cert"
+    C:\ProgramData\chocolatey\bin\wacs.exe --accepttos --host "{{ vm_public_dns }}" --source manual --friendlyname "azure-cert"
   when: cert_check.rc != 0
   register: cert_creation
 
