@@ -10,5 +10,3 @@
       - simple-acme
     state: latest
   ignore_errors: true
-  register: chocolatey_install
-  notify: Reboot if needed
