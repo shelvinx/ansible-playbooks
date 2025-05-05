@@ -4,3 +4,5 @@ auth_source: auto
 keyed_groups:
   - prefix: os
     key: os_profile.system
+  - prefix: tag_role
+    key: tags.role

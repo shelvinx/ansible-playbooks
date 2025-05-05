@@ -8,5 +8,7 @@
       - syspin
       - vscode
       - simple-acme
+      - simple-acme-store-keyvault
     state: latest
   ignore_errors: true
+  timeout: 240
