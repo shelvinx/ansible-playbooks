@@ -1,19 +1,17 @@
 ---
-- name: Store Public DNS of VM as a variable
-  set_fact:
-    vm_public_dns: "{{ hostvars[inventory_hostname].public_dns_hostnames[0] }}"
-
-- name: Use the stored public DNS in another task
-  debug:
-    msg: "The stored public DNS is: {{ vm_public_dns }}"
-
-- name: Add Firefox syspin to Run key
-  win_regedit:
-    path: 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Run'
-    name: 'PinFirefoxSyspin'
-    data: 'syspin "C:\Program Files\Mozilla Firefox\firefox.exe" 51201'
-    type: string
+- name: Set timezone to GMT
+  win_timezone:
+    timezone: 'GMT Standard Time'
     state: present
+
+- name: Windows Firewall - Allow ICMP
+  win_firewall_rule:
+    name: "Allow ICMP"
+    action: allow
+    direction: in
+    protocol: icmpv4
+    state: present
+    enabled: true
 
 - name: Find Edge uninstaller
   win_find:
