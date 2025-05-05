@@ -6,9 +6,9 @@
     - vars/connection-linux.yml
 
   tasks:
-  - name: Ping all Linux systems
+  - name: "Linux: Ping"
     ping:
 
-  - name: Timezone - London UK
+  - name: "Linux: Update Timezone"
     ansible.builtin.timezone:
       name: 'Europe/London'

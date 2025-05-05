@@ -2,15 +2,14 @@
 Repository for Ansible playbooks and roles to manage Azure resources.
 
 ## Features
-- Uses Mitogen strategy for faster Ansible execution
 - Connects to Windows via PSRP with NTLM authentication
 - Uses azure.azcollection.azure_rm dynamic inventory plugin with OIDC (auth_source: auto)
 - Applies various registry tweaks for Windows customization
-- Implements Let's Encrypt certificate issuance for RDP listener
-- Customizes Firefox startup via syspin pinning
-- Automates Microsoft Edge uninstallation
-- Supports CI/CD workflows (GitHub Actions, uv for dependency management)
-- Includes handlers for automatic reboot after registry updates
+- Implements Let's Encrypt certificate issuance for RDP listener *Functionality Broken - fix in progress*
+- Script to remove Microsoft Edge
+- CI/CD with GitHub Actions using Terraform Post-Apply Run Webhook
+- Dynamic playbooks based on Azure Tags
+- Uses Mitogen strategy for faster Ansible execution
 
 ### Azure Dynamic Inventory Authentication (OIDC)
 - When using the `azure_rm` dynamic inventory plugin in CI/CD (GitHub Actions), set `auth_source: auto` in `inventory/azure_rm.yml`.

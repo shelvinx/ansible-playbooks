@@ -1,0 +1,11 @@
+---
+- name: Install Web Server IIS
+  win_feature:
+    name:
+      - Web-Server
+      - Web-Common-Http
+  register: win_feature
+
+- name: Reboot if installing Web-Server feature requires it
+  ansible.windows.win_reboot:
+  when: win_feature.reboot_required

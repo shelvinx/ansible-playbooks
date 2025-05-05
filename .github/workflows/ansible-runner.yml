@@ -57,8 +57,8 @@ jobs:
 
       - name: Run Ansible Playbook
         run: |
-          echo "Running Windows playbook"
-          ansible-playbook -i inventory/azure_rm.yml play-windows.yml
+          echo "Running Site playbook"
+          ansible-playbook -i inventory/azure_rm.yml play-site.yml
         shell: bash
         env:
           ANSIBLE_PASSWORD: ${{ secrets.ANSIBLE_PASSWORD }}

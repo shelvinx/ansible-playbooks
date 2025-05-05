@@ -1,0 +1,6 @@
+---
+- name: Create new domain in a new forest on the target host and reboot
+  microsoft.ad.domain:
+    dns_domain_name: ansible.local
+    safe_mode_password: "{{ lookup('env', 'ANSIBLE_PASSWORD') }}"
+    reboot: true

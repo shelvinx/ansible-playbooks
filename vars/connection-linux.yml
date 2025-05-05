@@ -4,4 +4,3 @@ ansible_ssh_pass: "{{ lookup('env', 'ANSIBLE_PASSWORD') }}"
 
 # SSH Settings
 ansible_ssh_port: 22
-become: yes

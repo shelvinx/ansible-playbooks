@@ -1,0 +1,8 @@
+---
+- name: Domain Controller Configuration
+  hosts: tag_role_domaincontroller
+  vars_files:
+    - vars/connection-windows.yml
+
+  roles:
+    - role: windows-dc

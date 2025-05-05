@@ -1,0 +1,13 @@
+# site.yml (Main Orchestration Playbook)
+---
+- name: Apply Base Windows Config
+  import_playbook: play-windows.yml
+  when: inventory_hostname in groups['os_windows'] | default([])
+
+- name: Apply Base Linux Config
+  import_playbook: play-linux.yml
+  when: inventory_hostname in groups['os_linux'] | default([])
+
+- name: Apply Domain Controller Config
+  import_playbook: play-windows-dc.yml
+  when: inventory_hostname in groups['tag_role_domaincontroller'] | default([])
