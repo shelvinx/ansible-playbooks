@@ -1,0 +1,119 @@
+---
+- name: Store Public DNS of VM as a variable
+  set_fact:
+    vm_public_dns: "{{ hostvars[inventory_hostname].public_dns_hostnames[0] }}"
+
+- name: Use the stored public DNS in another task
+  debug:
+    msg: "The stored public DNS is: {{ vm_public_dns }}"
+
+- name: Get all certs in store
+  community.windows.win_certificate_info:
+    store_location: LocalMachine
+    store_name: My
+  register: mycert
+
+- name: Determine if cert for this host already exists
+  set_fact:
+    cert_exists: "{{ (mycert.certificates | selectattr('issued_to','equalto', vm_public_dns) | list) | length > 0 }}"
+
+- name: Debug certificate existence
+  debug:
+    msg: 'cert_exists={{ cert_exists }} for host {{ vm_public_dns }}'
+
+- name: Debug host certificate details
+  debug:
+    msg: >-
+      {{ mycert.certificates
+         | selectattr('issued_to','equalto', vm_public_dns)
+         | json_query("[].{IssuedTo: issued_to, Thumbprint: thumbprint, Expiry: valid_to_iso8601}") }}
+
+# Check Azure Key Vault for existing certificate
+- name: Check Azure Key Vault for existing certificate
+  community.azure.keyvault:
+    vault_name: "{{ keyvault_name }}"
+    name: "{{ vm_public_dns }}"
+    state: present
+  register: keyvault_cert
+
+- name: Request a new cert via win-acme
+  win_command: >-
+    C:\ProgramData\chocolatey\bin\wacs.exe --accepttos --host "{{ vm_public_dns }}" --source manual --friendlyname "azure-cert" --store certificatestore --emailaddress email@hotmail.com --notaskscheduler
+  when: not cert_exists
+  register: wacs_result
+
+- name: Refresh certificate list after win-acme creation
+  community.windows.win_certificate_info:
+    store_location: LocalMachine
+    store_name: My
+  register: mycert
+  when: wacs_result.changed
+
+- name: Update cert_exists after win-acme creation
+  set_fact:
+    cert_exists: "{{ (mycert.certificates | selectattr('issued_to','equalto', vm_public_dns) | list | length) > 0 }}"
+  when: wacs_result.changed
+
+- name: Show win-acme stdout
+  debug:
+    msg: "{{ wacs_result.stdout_lines | default('') }}"
+  when: wacs_result.changed
+
+- name: Show win-acme stderr (if any)
+  debug:
+    msg: "{{ wacs_result.stderr_lines | default('') }}"
+  when: wacs_result.changed
+
+- name: Refresh certificate list before renewal
+  community.windows.win_certificate_info:
+    store_location: LocalMachine
+    store_name: My
+  register: renewal_certs
+
+- name: Output for Renewals
+  debug:
+    msg: >-
+      {{ renewal_certs.certificates
+         | json_query(
+           "[?contains(issuer,'Encrypt')].
+             {FriendlyName: friendly_name,
+              Issuer:        issuer,
+              Expiry:        valid_to_iso8601}
+         )
+      }}
+  when: renewal_certs.changed
+
+- name: Renew expiring Lets Encrypt certs
+  win_command: >-
+    C:\ProgramData\chocolatey\bin\wacs.exe --target thumbprint={{ item.thumbprint }} --store My --renew
+  loop: "{{ (renewal_certs.certificates | default([]))
+             | selectattr(\"issuer\",\"search\",\"Let's Encrypt\")
+             | selectattr(\"valid_to\",\"<=\", (ansible_date_time.epoch | int + 2592000))
+             | list }}"
+
+- name: Get current RDP listener thumbprint
+  win_command: >-
+    powershell -NoProfile -Command "(Get-WmiObject -Namespace 'Root\\CIMV2\\TerminalServices' -Class Win32_TSGeneralSetting -Filter \"TerminalName='RDP-tcp'\").SSLCertificateSHA1Hash"
+  register: current_rdp_thumb
+  changed_when: false
+
+- name: Get azure-cert thumbprint
+  win_command: >-
+    powershell -NoProfile -Command "(Get-ChildItem Cert:\\LocalMachine\\My | Where-Object FriendlyName -like '*azure-cert*').Thumbprint"
+  register: azure_thumb
+  changed_when: false
+
+- name: Determine if RDP thumb needs update
+  set_fact:
+    update_rdp_thumb: "{{ (current_rdp_thumb.stdout | default('')) != (azure_thumb.stdout | default('')) }}"
+
+- name: Set certificate thumbprint for RDP listener
+  win_shell: |
+    $tsgs = gwmi -class "Win32_TSGeneralSetting" -Namespace root\cimv2\terminalservices -Filter "TerminalName='RDP-tcp'"
+    $azureCert = gci -path cert:/LocalMachine/My | Where-Object { $_.FriendlyName -like "*azure-cert*" }
+    $thumb = $azureCert.Thumbprint
+    swmi -path $tsgs.__path -argument @{SSLCertificateSHA1Hash="$thumb"}
+    Restart-Service -Name TermService -Force
+  when:
+    - update_rdp_thumb
+    - wacs_result.changed
