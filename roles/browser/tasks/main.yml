@@ -15,17 +15,17 @@
     path: C:\Program Files\Mozilla Firefox\distribution
     state: directory
 
-- name: Copy Firefox policies.json from repository
+- name: Copy policies.json from repository
   win_copy:
-    src: scripts/firefox/policies.json
+    src: data/firefox/policies.json
     dest: C:\Program Files\Mozilla Firefox\distribution\policies.json
 
 - name: Copy autoconfig.js from repository
   win_copy:
-    src: scripts/firefox/autoconfig.js
+    src: data/firefox/autoconfig.js
     dest: C:\Program Files\Mozilla Firefox\defaults\pref\autoconfig.js
 
 - name: Copy firefox.cfg from repository
   win_copy:
-    src: scripts/firefox/firefox.cfg
+    src: data/firefox/firefox.cfg
     dest: C:\Program Files\Mozilla Firefox\firefox.cfg

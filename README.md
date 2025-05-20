@@ -37,4 +37,8 @@ export ANSIBLE_PASSWORD
 ### Workflow Trigger
 - GitHub Actions workflow is triggered by TF Cloud Run Task using webhook.
 
+### Notes
+- azure_rm plugin requires ~/.ansible/collections/ansible_collections/azure/azcollection/requirements.txt which contains the specific versions of the Azure SDKs.
+- [uv pip install azure-mgmt-batch --upgrade]
+  This resolves the warning `SyntaxWarning: invalid escape sequence '\ '`
 ---
