@@ -5,6 +5,9 @@ name: Test Workflow
 on:
   # Allows manual triggering from the Actions tab
   workflow_dispatch:
+  push:
+    branches:
+      - dev
 
 permissions: # Needed for Azure Login action
   id-token: write
