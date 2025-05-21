@@ -1,5 +1,5 @@
 # .github/workflows/ansible_azure.yml
-name: Run Ansible on Azure Infra
+name: Test Workflow
 
 # Controls when the workflow will run
 on:
