@@ -45,6 +45,12 @@ jobs:
         run: ansible-galaxy collection install azure.azcollection
         shell: bash
 
+      # Azure CLI
+      - name: Install Azure CLI
+        uses: azure/CLI@v2
+        with:
+          version: '2.71.0'
+
       - name: Azure Login
         uses: azure/login@v2
         with:
