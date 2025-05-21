@@ -58,17 +58,6 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Dump Azure-CLI & MSAL versions
-        run: |
-          echo "🔹 az CLI version:"
-          az --version
-          echo ""
-          echo "🔹 MSAL version (the HTTP-cache library):"
-          python3 - << 'EOF'
-          import pkg_resources
-          print(pkg_resources.get_distribution("msal"))
-          EOF
-
       - name: Run Ansible Inventory Check
         run: |
           echo "Listing Azure dynamic inventory..."
