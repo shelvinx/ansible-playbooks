@@ -42,10 +42,23 @@ jobs:
         run: ansible-galaxy collection install azure.azcollection
         shell: bash
 
+      # This is currently required for the AzureRM Plugin AZCLI dependency
+      - name: Install Azure CLI 2.71.0
+        run: |
+          sudo apt-get remove -y azure-cli || true
+          sudo apt-get autoremove -y
+    
+          sudo apt-get update
+          sudo apt-get install -y ca-certificates curl apt-transport-https lsb-release gnupg
+          curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/microsoft.gpg > /dev/null
+          AZ_REPO=$(lsb_release -cs)
+          echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | sudo tee /etc/apt/sources.list.d/azure-cli.list
+          sudo apt-get update
+          sudo apt-get install -y azure-cli=2.71.0-1~$AZ_REPO
+
       - name: Azure Login
         uses: azure/login@v2
         with:
-          azcliversion: 2.71.0
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
