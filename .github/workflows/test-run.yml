@@ -1,10 +1,13 @@
 # .github/workflows/ansible_azure.yml
-name: Run Ansible on Azure Infra
+name: Test Workflow
 
 # Controls when the workflow will run
 on:
   # Allows manual triggering from the Actions tab
   workflow_dispatch:
+  push:
+    branches:
+      - dev
 
 permissions: # Needed for Azure Login action
   id-token: write
@@ -41,11 +44,16 @@ jobs:
       - name: Install Azure Collection
         run: ansible-galaxy collection install azure.azcollection
         shell: bash
+      
+      - name: Install Ansible and Azure dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install --upgrade ansible[azure]
 
+      # Azure Login
       - name: Azure Login
         uses: azure/login@v2
         with:
-          azcliversion: 2.71.0
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
@@ -55,14 +63,6 @@ jobs:
           echo "Listing Azure dynamic inventory..."
           ansible-inventory -i inventory/azure_rm.yml --list -vvv
         shell: bash
-
-      - name: Run Ansible Playbook
-        run: |
-          echo "Running Site playbook"
-          ansible-playbook -i inventory/azure_rm.yml play-site.yml
-        shell: bash
-        env:
-          ANSIBLE_PASSWORD: ${{ secrets.ANSIBLE_PASSWORD }}
 
       # Optional: Azure Logout (cleans up credentials)
       # Instead of relying on Github Actions Cleanup
