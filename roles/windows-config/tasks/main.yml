@@ -44,11 +44,9 @@
     state: "{{ item.state | default('present') }}"
   loop:
     - { path: 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa', name: 'LimitBlankPasswordUse', data: 0 }
-    - { path: 'HKLM:\Software\Policies\Microsoft\WindowsStore', name: 'DisableStoreApps', data: 1 }
     - { path: 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer', name: 'EnableAutoTray', data: 0 }
     - { path: 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced', name: 'Hidden' }
     - { path: 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced', name: 'HideFileExt', data: 0 }
-    - { path: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent', name: 'DisableWindowsConsumerFeatures', data: 1 }
     - { path: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent', name: 'DisableSoftLanding', data: 1 }
     - { path: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent', name: 'DisableThirdPartySuggestions', data: 1 }
     - { path: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent', name: 'DisableWindowsSpotlightFeatures', data: 1 }
@@ -74,7 +72,15 @@
     - { path: 'HKLM:\SYSTEM\CurrentControlSet\Control\Network', name: 'NewNetworkWindowOff', data: 1 }
     - { path: 'HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A7-37EF-4b3f-8CFC-4F3A74704073}', name: 'IsInstalled', data: 0 }
     - { path: 'HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A8-37EF-4b3f-8CFC-4F3A74704073}', name: 'IsInstalled', data: 0 }
+    - { path: 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced', name: 'TaskbarAl', data: 0 }
+    - { path: 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize', name: 'SystemUsesLightTheme', data: 0 }
+    - { path: 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize', name: 'AppsUseLightTheme', data: 0 }
+    - { path: 'HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32', name: "", data: "", type: string }
+    - { path: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\OOBE', name: 'DisablePrivacyExperience', data: 0, type: dword }
+    
+  
   tags:
     - registry
   register: registry_update
-  notify: Reboot - Registry updated
+  notify:
+    - Reboot - Registry updated
