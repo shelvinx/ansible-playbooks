@@ -76,7 +76,7 @@
     - { path: 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize', name: 'SystemUsesLightTheme', data: 0 }
     - { path: 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize', name: 'AppsUseLightTheme', data: 0 }
     - { path: 'HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32', name: "", data: "", type: string }
-    - { path: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\OOBE', name: 'DisablePrivacyExperience', data: 0, type: dword }
+    - { path: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\OOBE', name: 'DisablePrivacyExperience', data: 1, type: dword }
     
   
   tags:
