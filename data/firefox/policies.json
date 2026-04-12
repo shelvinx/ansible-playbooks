@@ -28,6 +28,25 @@
       "NoDefaultBookmarks": true,
       "DisableDefaultBrowserAgent": true,
       "DisableTelemetry": true,
+      "DisableProfileTutorial": true,
+      "Preferences": {
+        "browser.aboutwelcome.enabled": {
+          "Value": false,
+          "Status": "locked"
+        },
+        "browser.newtabpage.activity-stream.system.showWeather": {
+          "Value": false,
+          "Status": "locked"
+        },
+        "browser.newtabpage.activity-stream.system.showWeatherOptIn": {
+          "Value": false,
+          "Status": "locked"
+        },
+        "browser.urlbar.suggest.weather": {
+          "Value": false,
+          "Status": "locked"
+        }
+      },
       "Permissions": {
         "Location": {
           "BlockNewRequests": true
