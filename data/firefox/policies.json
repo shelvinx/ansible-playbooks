@@ -1,68 +1,74 @@
 {
-    "policies": {
-        "DisableFirefoxStudies": true,
-        "EnterprisePoliciesEnabled": true,
-        "UserMessaging": {
-            "WhatsNew": false,
-            "FeatureRecommendations": false,
-            "ExtensionRecommendations": false,
-    "UrlbarInterventions": false,
-    "SkipOnboarding": true
-  },
-      "BlockAboutConfig": false,
-      "DisplayBookmarksToolbar": "never",
-      "DontCheckDefaultBrowser": true,
-      "FirefoxHome": {
-        "Search": true,
-        "TopSites": false,
-        "SponsoredTopSites": false,
-        "Highlights": false,
-        "Pocket": false,
-        "SponsoredPocket": false,
-        "Snippets": false,
-        "Locked": false
+  "policies": {
+    "weather": false,
+    "SkipTermsOfUse": true,
+    "DisableFirefoxStudies": true,
+    "EnterprisePoliciesEnabled": true,
+    "UserMessaging": {
+      "WhatsNew": false,
+      "FeatureRecommendations": false,
+      "ExtensionRecommendations": false,
+      "UrlbarInterventions": false,
+      "SkipOnboarding": true
+    },
+    "BlockAboutConfig": false,
+    "DisplayBookmarksToolbar": "never",
+    "DontCheckDefaultBrowser": true,
+    "FirefoxHome": {
+      "Search": true,
+      "TopSites": false,
+      "SponsoredTopSites": false,
+      "Highlights": false,
+      "Pocket": false,
+      "SponsoredPocket": false,
+      "Snippets": false,
+      "Locked": false
+    },
+    "DisablePocket": true,
+    "OverrideFirstRunPage": "about:blank",
+    "OverridePostUpdatePage": "about:blank",
+    "NoDefaultBookmarks": true,
+    "DisableDefaultBrowserAgent": true,
+    "DisableTelemetry": true,
+    "DisableProfileTutorial": true,
+    "Preferences": {
+      "browser.aboutwelcome.enabled": {
+        "Value": false,
+        "Status": "locked"
       },
-      "DisablePocket": true,
-      "OverrideFirstRunPage": "about:blank",
-      "OverridePostUpdatePage": "about:blank",
-      "NoDefaultBookmarks": true,
-      "DisableDefaultBrowserAgent": true,
-      "DisableTelemetry": true,
-      "DisableProfileTutorial": true,
-      "Preferences": {
-        "browser.aboutwelcome.enabled": {
-          "Value": false,
-          "Status": "locked"
-        },
-        "browser.newtabpage.activity-stream.system.showWeather": {
-          "Value": false,
-          "Status": "locked"
-        },
-        "browser.newtabpage.activity-stream.system.showWeatherOptIn": {
-          "Value": false,
-          "Status": "locked"
-        },
-        "browser.urlbar.suggest.weather": {
-          "Value": false,
-          "Status": "locked"
-        }
+      "browser.newtabpage.activity-stream.showWeather": {
+        "Value": false,
+        "Status": "locked"
       },
-      "Permissions": {
-        "Location": {
-          "BlockNewRequests": true
-        },
-        "Notifications": {
-          "BlockNewRequests": true
-        }
+      "browser.newtabpage.activity-stream.system.showWeather": {
+        "Value": false,
+        "Status": "locked"
       },
-      "ExtensionSettings": {
-        "uBlock0@raymondhill.net": {
-          "installation_mode": "force_installed",
-          "install_url": "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi",
-          "default_area": "navbar"
-        }
+      "browser.newtabpage.activity-stream.system.showWeatherOptIn": {
+        "Value": false,
+        "Status": "locked"
       },
-      "3rdparty": {
+      "browser.urlbar.suggest.weather": {
+        "Value": false,
+        "Status": "locked"
+      }
+    },
+    "Permissions": {
+      "Location": {
+        "BlockNewRequests": true
+      },
+      "Notifications": {
+        "BlockNewRequests": true
+      }
+    },
+    "ExtensionSettings": {
+      "uBlock0@raymondhill.net": {
+        "installation_mode": "force_installed",
+        "install_url": "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi",
+        "default_area": "navbar"
+      }
+    },
+    "3rdparty": {
       "Extensions": {
         "uBlock0@raymondhill.net": {
           "adminSettings": {
