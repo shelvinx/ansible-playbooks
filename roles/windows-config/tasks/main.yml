@@ -66,7 +66,7 @@
 
 - name: Registry - Set HKCU Configuration updates (Default User Hive)
   win_regedit:
-    path: "HKLM:\\TEMP_HIVE\\{{ item.path }}"
+    path: "HKLM:\\ANSIBLE\\{{ item.path }}"
     name: "{{ item.name }}"
     data: "{{ item.data | default(omit) }}"
     type: "{{ item.type | default('dword') }}"
@@ -101,7 +101,7 @@
     - { path: 'Control Panel\International', name: 'sShortDate', data: 'dd/MM/yyyy', type: string }
 
 - name: Unload Default User hive manually
-  win_command: reg unload HKLM\TEMP_HIVE
+  win_command: reg unload HKLM\ANSIBLE
   changed_when: false
   tags:
     - registry
