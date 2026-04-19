@@ -64,14 +64,13 @@
     - { path: 'HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A8-37EF-4b3f-8CFC-4F3A74704073}', name: 'IsInstalled', data: 0 }
     - { path: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\OOBE', name: 'DisablePrivacyExperience', data: 1, type: dword }
 
-- name: Registry - Set HKCU Configuration updates (Default User Hive)
+- name: Registry - Set HKCU Configuration updates (Current User)
   win_regedit:
-    path: "HKLM:\\ANSIBLE\\{{ item.path }}"
+    path: "HKCU:\\{{ item.path }}"
     name: "{{ item.name }}"
     data: "{{ item.data | default(omit) }}"
     type: "{{ item.type | default('dword') }}"
     state: "{{ item.state | default('present') }}"
-    hive: 'C:\Users\Default\NTUSER.DAT'
   tags:
     - registry
   register: registry_update_hkcu
@@ -99,3 +98,13 @@
     - { path: 'Software\Microsoft\Windows\CurrentVersion\Themes\Personalize', name: 'AppsUseLightTheme', data: 0 }
     - { path: 'Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32', name: "", data: "", type: string }
     - { path: 'Control Panel\International', name: 'sShortDate', data: 'dd/MM/yyyy', type: string }
+
+- name: Force Dark Theme via RunOnce (Survives Active Setup)
+  win_regedit:
+    path: HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce
+    name: EnforceDarkTheme
+    data: 'powershell.exe -WindowStyle Hidden -Command "New-ItemProperty -Path ''HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize'' -Name ''SystemUsesLightTheme'' -Value 0 -Force; New-ItemProperty -Path ''HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize'' -Name ''AppsUseLightTheme'' -Value 0 -Force"'
+    type: string
+    state: present
+  tags:
+    - registry
