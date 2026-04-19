@@ -99,12 +99,16 @@
     - { path: 'Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32', name: "", data: "", type: string }
     - { path: 'Control Panel\International', name: 'sShortDate', data: 'dd/MM/yyyy', type: string }
 
-- name: Force Dark Theme via RunOnce (Survives Active Setup)
+- name: Force Dark Theme & Searchbox via Active Setup (Before Explorer Starts)
   win_regedit:
-    path: HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce
-    name: EnforceDarkTheme
-    data: 'powershell.exe -WindowStyle Hidden -Command "New-ItemProperty -Path ''HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize'' -Name ''SystemUsesLightTheme'' -Value 0 -Force; New-ItemProperty -Path ''HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize'' -Name ''AppsUseLightTheme'' -Value 0 -Force"'
+    path: 'HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\ZZ_AnsibleOverrides'
+    name: "{{ item.name }}"
+    data: "{{ item.data }}"
     type: string
     state: present
+  loop:
+    - { name: '', data: 'Ansible Explorer Overrides' }
+    - { name: 'Version', data: '1' }
+    - { name: 'StubPath', data: 'powershell.exe -WindowStyle Hidden -Command "New-ItemProperty -Path ''HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize'' -Name ''SystemUsesLightTheme'' -Value 0 -Force; New-ItemProperty -Path ''HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize'' -Name ''AppsUseLightTheme'' -Value 0 -Force; New-ItemProperty -Path ''HKCU:\Software\Microsoft\Windows\CurrentVersion\Search'' -Name ''SearchboxTaskbarMode'' -Value 0 -Force"' }
   tags:
     - registry

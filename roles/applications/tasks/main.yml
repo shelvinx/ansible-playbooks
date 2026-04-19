@@ -9,6 +9,6 @@
       - vscode
       - simple-acme
       - simple-acme-store-keyvault
-    state: latest
+    state: present
   ignore_errors: true
   timeout: 240
