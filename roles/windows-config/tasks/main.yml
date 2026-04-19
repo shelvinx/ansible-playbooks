@@ -99,9 +99,3 @@
     - { path: 'Software\Microsoft\Windows\CurrentVersion\Themes\Personalize', name: 'AppsUseLightTheme', data: 0 }
     - { path: 'Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32', name: "", data: "", type: string }
     - { path: 'Control Panel\International', name: 'sShortDate', data: 'dd/MM/yyyy', type: string }
-
-- name: Unload Default User hive manually
-  win_command: reg unload HKLM\ANSIBLE
-  changed_when: false
-  tags:
-    - registry
