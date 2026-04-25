@@ -83,28 +83,27 @@
   notify:
     - Reboot - Registry updated
 
-# PSRP loads the azureuser profile on connect, so NTUSER.DAT is locked and the
-# hive parameter cannot be used. The profile hive is already mounted at HKU\<SID>,
-# so we resolve the SID and write directly there. Changes persist to NTUSER.DAT
-# when the session ends, ensuring settings are correct on first interactive RDP login.
-- name: Get azureuser SID
-  win_shell: (Get-LocalUser -Name 'azureuser').SID.Value
-  register: azureuser_sid
-  changed_when: false
-  tags:
-    - registry
-
-- name: Registry - azureuser hive settings (via HKU SID)
+# WinRM session hives are session-scoped and not flushed to NTUSER.DAT on reboot.
+# Using become with runas + logon_type=batch creates a proper batch logon context
+# where HKCU is backed by the real persistent user profile (NTUSER.DAT), so
+# changes survive the reboot and are present on first interactive RDP login.
+- name: Registry - azureuser HKCU settings (persistent via batch logon)
   win_regedit:
-    path: "HKU:\\{{ azureuser_sid.stdout | trim }}\\{{ item.subpath }}"
+    path: "HKCU:\\{{ item.path }}"
     name: "{{ item.name }}"
     data: "{{ item.data }}"
     type: dword
     state: present
+  become: true
+  become_method: runas
+  become_user: azureuser
+  become_flags: "logon_type=batch logon_flags=with_profile"
+  vars:
+    ansible_become_password: "{{ ansible_password }}"
   loop:
-    - { subpath: 'Software\Microsoft\Windows\CurrentVersion\Search', name: 'SearchboxTaskbarMode', data: 0 }
-    - { subpath: 'Software\Microsoft\Windows\CurrentVersion\Themes\Personalize', name: 'SystemUsesLightTheme', data: 0 }
-    - { subpath: 'Software\Microsoft\Windows\CurrentVersion\Themes\Personalize', name: 'AppsUseLightTheme', data: 0 }
+    - { path: 'Software\Microsoft\Windows\CurrentVersion\Search', name: 'SearchboxTaskbarMode', data: 0 }
+    - { path: 'Software\Microsoft\Windows\CurrentVersion\Themes\Personalize', name: 'SystemUsesLightTheme', data: 0 }
+    - { path: 'Software\Microsoft\Windows\CurrentVersion\Themes\Personalize', name: 'AppsUseLightTheme', data: 0 }
   tags:
     - registry
   notify:
