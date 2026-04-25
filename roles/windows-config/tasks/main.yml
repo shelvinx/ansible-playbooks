@@ -83,18 +83,24 @@
   notify:
     - Reboot - Registry updated
 
-# These settings must be written directly to the user hive (NTUSER.DAT) rather
-# than HKCU, because WinRM runs as a network logon (Type 3) which does not load
-# the user profile. Writing via the hive parameter ensures settings are present
-# when the user first logs in interactively via RDP.
-- name: Registry - azureuser hive settings (pre-login safe)
+# PSRP loads the azureuser profile on connect, so NTUSER.DAT is locked and the
+# hive parameter cannot be used. The profile hive is already mounted at HKU\<SID>,
+# so we resolve the SID and write directly there. Changes persist to NTUSER.DAT
+# when the session ends, ensuring settings are correct on first interactive RDP login.
+- name: Get azureuser SID
+  win_shell: (Get-LocalUser -Name 'azureuser').SID.Value
+  register: azureuser_sid
+  changed_when: false
+  tags:
+    - registry
+
+- name: Registry - azureuser hive settings (via HKU SID)
   win_regedit:
-    path: "HKLM:\\ANSIBLE\\{{ item.subpath }}"
+    path: "HKU:\\{{ azureuser_sid.stdout | trim }}\\{{ item.subpath }}"
     name: "{{ item.name }}"
     data: "{{ item.data }}"
     type: dword
     state: present
-    hive: 'C:\Users\azureuser\NTUSER.DAT'
   loop:
     - { subpath: 'Software\Microsoft\Windows\CurrentVersion\Search', name: 'SearchboxTaskbarMode', data: 0 }
     - { subpath: 'Software\Microsoft\Windows\CurrentVersion\Themes\Personalize', name: 'SystemUsesLightTheme', data: 0 }
