@@ -76,30 +76,12 @@
     - { path: 'HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32', name: "", data: "", type: string }
     - { path: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\OOBE', name: 'DisablePrivacyExperience', data: 1, type: dword }
     - { path: 'HKCU:\Control Panel\International', name: 'sShortDate', data: 'dd/MM/yyyy', type: string }
+    - { path: 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize', name: 'SystemUsesLightTheme', data: 0 }
+    - { path: 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize', name: 'AppsUseLightTheme', data: 0 }
+    - { path: 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Search', name: 'SearchboxTaskbarMode', data: 0 }
     
   tags:
     - registry
   register: registry_update
-  notify:
-    - Reboot - Registry updated
-
-# Windows 10/11 overwrites theme and taskbar UI registry keys during the "first logon"
-# profile initialization screen. Writing to HKCU or NTUSER.DAT beforehand is overwritten.
-# Active Setup is the native Windows mechanism to run a command once per user during login.
-# It runs *after* profile creation but *before* Explorer starts, so the settings apply immediately.
-- name: Active Setup - Enforce Theme and Search settings on first logon
-  win_regedit:
-    path: HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\AnsibleUserConfig
-    name: "{{ item.name }}"
-    data: "{{ item.data }}"
-    type: "{{ item.type | default('string') }}"
-    state: present
-  loop:
-    - { name: '', data: 'Ansible First-Logon UI Config' }
-    - { name: 'Version', data: '1' }
-    - { name: 'IsInstalled', data: 1, type: dword }
-    - { name: 'StubPath', data: 'powershell.exe -NoProfile -WindowStyle Hidden -Command "Set-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize -Name SystemUsesLightTheme -Value 0 -Type DWord -Force; Set-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize -Name AppsUseLightTheme -Value 0 -Type DWord -Force; If (-not (Test-Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Search)) { New-Item -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Search -Force | Out-Null }; Set-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Search -Name SearchboxTaskbarMode -Value 0 -Type DWord -Force"' }
-  tags:
-    - registry
   notify:
     - Reboot - Registry updated
