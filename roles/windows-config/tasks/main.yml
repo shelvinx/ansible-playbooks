@@ -83,27 +83,22 @@
   notify:
     - Reboot - Registry updated
 
-# WinRM session hives are session-scoped and not flushed to NTUSER.DAT on reboot.
-# Using become with runas + logon_type=batch creates a proper batch logon context
-# where HKCU is backed by the real persistent user profile (NTUSER.DAT), so
-# changes survive the reboot and are present on first interactive RDP login.
-- name: Registry - azureuser HKCU settings (persistent via batch logon)
+# Windows 10/11 overwrites theme and taskbar UI registry keys during the "first logon"
+# profile initialization screen. Writing to HKCU or NTUSER.DAT beforehand is overwritten.
+# Active Setup is the native Windows mechanism to run a command once per user during login.
+# It runs *after* profile creation but *before* Explorer starts, so the settings apply immediately.
+- name: Active Setup - Enforce Theme and Search settings on first logon
   win_regedit:
-    path: "HKCU:\\{{ item.path }}"
+    path: HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\AnsibleUserConfig
     name: "{{ item.name }}"
     data: "{{ item.data }}"
-    type: dword
+    type: "{{ item.type | default('string') }}"
     state: present
-  become: true
-  become_method: runas
-  become_user: azureuser
-  become_flags: "logon_type=batch logon_flags=with_profile"
-  vars:
-    ansible_become_password: "{{ ansible_password }}"
   loop:
-    - { path: 'Software\Microsoft\Windows\CurrentVersion\Search', name: 'SearchboxTaskbarMode', data: 0 }
-    - { path: 'Software\Microsoft\Windows\CurrentVersion\Themes\Personalize', name: 'SystemUsesLightTheme', data: 0 }
-    - { path: 'Software\Microsoft\Windows\CurrentVersion\Themes\Personalize', name: 'AppsUseLightTheme', data: 0 }
+    - { name: '', data: 'Ansible First-Logon UI Config' }
+    - { name: 'Version', data: '1' }
+    - { name: 'IsInstalled', data: 1, type: dword }
+    - { name: 'StubPath', data: 'powershell.exe -NoProfile -WindowStyle Hidden -Command "Set-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize -Name SystemUsesLightTheme -Value 0 -Type DWord -Force; Set-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize -Name AppsUseLightTheme -Value 0 -Type DWord -Force; If (-not (Test-Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Search)) { New-Item -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Search -Force | Out-Null }; Set-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Search -Name SearchboxTaskbarMode -Value 0 -Type DWord -Force"' }
   tags:
     - registry
   notify:
